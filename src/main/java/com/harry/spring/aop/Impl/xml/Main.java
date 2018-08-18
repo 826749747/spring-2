@@ -1,4 +1,4 @@
-package com.harry.spring.aop.Impl;
+package com.harry.spring.aop.Impl.xml;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -9,9 +9,9 @@ public class Main {
 
 
 		
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-xml.xml");
 		
-		ArithmeticCaculator arithmeticCaculator = ctx.getBean(ArithmeticCaculator.class);
+		ArithmeticCaculator arithmeticCaculator = (ArithmeticCaculator) ctx.getBean("arithmeticCaculator");
 		
 		System.out.println(arithmeticCaculator.getClass().getName());
 		int result = arithmeticCaculator.add(1, 2);

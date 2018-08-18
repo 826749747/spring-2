@@ -1,8 +1,8 @@
-package com.harry.spring.aop.Impl;
+package com.harry.spring.aop.Impl.xml;
 
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class ArithmeticCaculatorImpl implements ArithmeticCaculator {
 
 	public int add(int a, int b) {
