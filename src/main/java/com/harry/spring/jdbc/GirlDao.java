@@ -16,8 +16,8 @@ public class GirlDao {
 		String sql = "Select * from girl Where id = ?";
 		
 		RowMapper<girl> rowMapper = new BeanPropertyRowMapper<girl>(girl.class);		//ROWMAPPER用于查询结果和实际对象的转换
-		girl gg = jdbcTemplate.queryForObject(sql, rowMapper,1);
-		
+		girl gg = jdbcTemplate.queryForObject(sql, rowMapper,id);
 		return gg;
 	}
 }
+ 

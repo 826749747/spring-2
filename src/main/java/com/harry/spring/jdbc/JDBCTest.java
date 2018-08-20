@@ -2,17 +2,22 @@ package com.harry.spring.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
-
+import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 
 
@@ -20,10 +25,47 @@ public class JDBCTest {
 	
 	private ApplicationContext ctx = null;
 	private JdbcTemplate jdbcTemplate;
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	{
 		ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		jdbcTemplate =(JdbcTemplate)ctx.getBean("jdbcTemplate");
+		namedParameterJdbcTemplate =ctx.getBean(NamedParameterJdbcTemplate.class);
 	}
+	
+	/**
+	 * 使用具名参数时。可以使用BeanPropertySqlParameterSource(Object object)方法进行更新操作
+	 * 1.sql语句中的参数名和类的属性一致
+	 * 2.使用SqlParameterSource的BeanPropertySqlParameterSource实现作为参数
+	 * */
+	@Test
+	public void testNameParamerJdbcTemplate2() {
+		String sql = "Insert into girl values(:id,:age,:cup_size)";
+		
+		girl ggGirl = new girl();
+		ggGirl.setId(11);
+		ggGirl.setAge(22);
+		ggGirl.setCup_size("F");
+		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(ggGirl);
+		namedParameterJdbcTemplate.update(sql, paramSource);	
+	}
+
+	/**
+	 * NamedParameterJdbcTemplate
+	 * 可以为参数起名字
+	 * 1.好处：若有多个参数，则不用再去对应位置，直接对应参数名字，便于维护
+	 * 2.缺点：较为麻烦。
+	 * */
+//	@Test
+//	public void testNameParamerJdbcTemplate() {
+//		String sql = "Insert into girl values(:id,:age,:cup_size)";
+//		
+//		Map<String , Object> paramMap = new HashMap<String, Object>();
+//		paramMap.put("id", 9);
+//		paramMap.put("age", 30);
+//		paramMap.put("cup_size","G");
+//		namedParameterJdbcTemplate.update(sql, paramMap);
+//	}
+//	
 	
 	/**
 	 * 批量操作
@@ -43,6 +85,7 @@ public class JDBCTest {
 	
 	/**
 	 * 获取单个列的值，或做统计查询
+	 * 使用queryForObject(sql,Class)
 	 * */
 	@Test
 	public void testQueryForObject2() {

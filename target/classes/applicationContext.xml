@@ -30,4 +30,10 @@
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
+	
+	<!-- 配置NamedParameterJdbcTemplate,该对象可以视同具名参数，其没有无参数的构造器，所以必须为其构造器指定参数 -->
+	<bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource"></constructor-arg>
+		<!--  <property name="dataSource" ref="dataSource"></property>-->
+	</bean>
 </beans>
