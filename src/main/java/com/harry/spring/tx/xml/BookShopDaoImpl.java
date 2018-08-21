@@ -1,17 +1,19 @@
-package com.harry.spring.tx;
+package com.harry.spring.tx.xml;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 
-import org.hamcrest.core.Is;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+ 
 
-@Repository("bookShopDap")
+
 public class BookShopDaoImpl implements BookShopDao{
 	
-	@Autowired
+	
 	private JdbcTemplate jdbcTemplate;
+	
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 	
 	//根据书号获取书的单价
 	public int findBookPriceByIsbn(String Isbn) {

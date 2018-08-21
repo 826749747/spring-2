@@ -10,8 +10,8 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 	
 	<!-- a配置自动扫描的包 -->
-	<context:component-scan base-package="com.harry.spring"></context:component-scan>
-
+	<!--<context:component-scan base-package="com.harry.spring"></context:component-scan>
+  	-->
 	<!-- b使Aspectj注解起作用：自动为匹配的类生成代理对象 -->
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 	
@@ -27,23 +27,46 @@
 	      <property name="initialPoolSize" value="${jdbc.initialPoolSize}"></property>
 	      <property name="maxPoolSize" value="${jdbc.maxPoolSize}"></property>
 	</bean>
-	
 	<!-- 配置spring的jdbcTemplate -->
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
-	<!-- 配置NamedParameterJdbcTemplate,该对象可以视同具名参数，其没有无参数的构造器，所以必须为其构造器指定参数 -->
-	<bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-		<constructor-arg ref="dataSource"></constructor-arg>
-		<!--  <property name="dataSource" ref="dataSource"></property>-->
+	<!-- 配置bean -->
+	<bean id = "bookShopDao" class = "com.harry.spring.tx.xml.BookShopDaoImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
 	</bean>
 	
-	<!-- 配置事务管理器 -->
+	<bean id = "bookShopService" class="com.harry.spring.tx.xml.service.impl.BookShopServiceImpl">
+		<property name="bookShopDao" ref="bookShopDao"></property>
+	</bean>
+	
+	<bean id = "cashier" class="com.harry.spring.tx.xml.service.impl.CashierImpl">
+		<property name="bookShopService" ref="bookShopService"></property>
+	</bean>
+ 
+	<!-- 1.配置事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
-	<!--启用事务注解  -->
-	<tx:annotation-driven transaction-manager = "transactionManager"/>
+	<!-- 2.配置事务属性 -->
+	<tx:advice id="txAdive" transaction-manager="transactionManager">		<!-- 这里调用了事务管理器 -->
+		<tx:attributes>
+			<!--根据方法名指定是事务的属性  -->
+			<tx:method name="purchar" propagation = "REQUIRES_NEW"/>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="find*" read-only="true"/>
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 3.配置事务切入点，以及把事务切入点和事务属性关联起来 -->
+	<aop:config>
+		<aop:pointcut expression="execution(* com.harry.spring.tx.xml.service.*.*(..))" 
+			id="txPointCut"/>
+		<!-- 关联起来 -->
+		<aop:advisor advice-ref="txAdive" pointcut-ref = "txPointCut"/>
+	</aop:config>
+	
 </beans>
